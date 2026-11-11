@@ -1,0 +1,405 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Гиря-обруч DZEN</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#E7E5DF; --bg2:#D3D1CA; --ink:#1B1D21; --muted:#5E6169;
+  --panel:rgba(250,249,246,.80); --line:rgba(27,29,33,.13);
+  --accent:#C8531F; --btn:#1B1D21; --btnink:#F5F3EE;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#1A1C21; --bg2:#0D0E11; --ink:#ECEAE4; --muted:#9DA0A8;
+    --panel:rgba(26,28,33,.82); --line:rgba(236,234,228,.13);
+    --accent:#F08A4B; --btn:#ECEAE4; --btnink:#15171B;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#1A1C21; --bg2:#0D0E11; --ink:#ECEAE4; --muted:#9DA0A8;
+  --panel:rgba(26,28,33,.82); --line:rgba(236,234,228,.13);
+  --accent:#F08A4B; --btn:#ECEAE4; --btnink:#15171B;
+}
+html,body{height:100%}
+body{margin:0;background:radial-gradient(ellipse 80% 70% at 55% 62%, var(--bg) 0%, var(--bg2) 100%);
+  color:var(--ink);font-family:"IBM Plex Sans",system-ui,-apple-system,sans-serif;overflow:hidden;font-size:14px;line-height:1.45}
+#c{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none}
+#panel{position:fixed;left:18px;top:18px;width:318px;max-height:calc(100vh - 36px);overflow:auto;
+  background:var(--panel);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border:1px solid var(--line);border-radius:6px;padding:18px 18px 16px;box-sizing:border-box;display:flex;flex-direction:column;gap:13px}
+h1{font-family:Oswald,"Arial Narrow",sans-serif;font-weight:600;font-size:30px;line-height:1;margin:0;letter-spacing:.01em;text-transform:uppercase;text-wrap:balance}
+.sub{margin:6px 0 0;color:var(--muted);font-size:13px}
+.lbl{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin:0 0 6px;font-weight:500}
+.seg{display:flex;border:1px solid var(--line);border-radius:4px;overflow:hidden}
+.seg button{flex:1;background:transparent;border:0;padding:8px 6px;font:inherit;font-weight:500;color:var(--ink);cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--btn);color:var(--btnink)}
+button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.sws{display:flex;gap:8px;align-items:center}
+.sw{width:34px;height:34px;border-radius:50%;border:2px solid transparent;cursor:pointer;padding:0;box-shadow:inset 0 0 0 1px rgba(0,0,0,.15)}
+.sw[aria-pressed="true"]{border-color:var(--accent)}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.act{flex:1;min-width:120px;background:var(--btn);color:var(--btnink);border:0;border-radius:4px;padding:9px 10px;font:inherit;font-weight:500;cursor:pointer}
+.ghost{background:transparent;color:var(--ink);border:1px solid var(--line);border-radius:4px;padding:8px 10px;font:inherit;cursor:pointer}
+.chks{display:flex;flex-wrap:wrap;gap:6px 14px}
+.chk{display:flex;align-items:center;gap:7px;font-size:13px;cursor:pointer}
+.chk input{accent-color:var(--accent);margin:0}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px 14px;border-top:1px solid var(--line);padding-top:12px}
+.stat b{display:block;font-family:Oswald,"Arial Narrow",sans-serif;font-weight:500;font-size:22px;line-height:1.1;font-variant-numeric:tabular-nums}
+.stat span{color:var(--muted);font-size:12px}
+.stat small{font-size:12px;color:var(--muted);font-family:"IBM Plex Sans",sans-serif;font-weight:400}
+details{border-top:1px solid var(--line);padding-top:10px}
+summary{cursor:pointer;font-weight:500;list-style:none;display:flex;justify-content:space-between}
+summary::after{content:"+";color:var(--muted)}
+details[open] summary::after{content:"–"}
+details ol,details ul{margin:8px 0 0;padding-left:18px}
+details li{margin:6px 0}
+.note{font-size:12px;color:var(--muted);margin:8px 0 0}
+table{border-collapse:collapse;width:100%;font-size:12.5px;margin-top:8px}
+td{padding:4px 0;border-bottom:1px solid var(--line);vertical-align:top}
+td:last-child{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;color:var(--muted);padding-left:8px}
+#hint{position:fixed;right:18px;bottom:16px;color:var(--muted);font-size:12px;background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:6px 10px;backdrop-filter:blur(10px)}
+#load{position:fixed;inset:0;display:grid;place-items:center;color:var(--muted);font-family:Oswald,sans-serif;font-size:18px;letter-spacing:.08em;text-transform:uppercase;pointer-events:none}
+.tag{position:fixed;transform:translate(-50%,-100%);pointer-events:none;background:var(--btn);color:var(--btnink);font-size:12px;line-height:1.3;padding:5px 8px;border-radius:4px;max-width:210px;display:none;margin-top:-10px}
+.tag::after{content:"";position:absolute;left:50%;bottom:-6px;width:8px;height:8px;background:var(--btn);transform:translateX(-50%) rotate(45deg)}
+.tag b{color:var(--accent)}
+.tag.r{transform:translate(14px,-50%);margin-top:0}
+.tag.r::after{left:-4px;bottom:auto;top:50%;transform:translateY(-50%) rotate(45deg)}
+.tag.d{transform:translate(-50%,14px);margin-top:0}
+.tag.d::after{bottom:auto;top:-4px}
+.vars{display:flex;gap:6px;flex-wrap:wrap;margin:-2px 0 0}
+.vars a{font-size:12px;text-decoration:none;color:var(--ink);border:1px solid var(--line);border-radius:999px;padding:4px 10px}
+.vars a[aria-current]{background:var(--btn);color:var(--btnink);border-color:transparent}
+.vars a:hover{border-color:var(--accent)}
+@media (max-width:720px){
+  html,body{height:auto;overflow:auto}
+  #c{position:relative;inset:auto;width:100%;height:58vh;display:block}
+  #load{position:absolute;inset:auto;left:0;right:0;top:0;height:58vh}
+  #panel{position:static;width:auto;max-height:none;border-radius:0;border-left:0;border-right:0;padding:14px 16px 32px;backdrop-filter:none;-webkit-backdrop-filter:none}
+  #panel .vars{position:fixed;top:8px;left:8px;right:8px;z-index:3;margin:0;padding:5px;justify-content:center;background:var(--panel);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid var(--line);border-radius:14px}
+  .vars a{padding:5px 9px}
+  h1{font-size:24px} #hint{display:none}
+  .stat b{font-size:20px}
+}
+</style>
+</head>
+<body>
+
+<canvas id="c" aria-label="3D-модель быстрой в печати гири-обруча из семи банок"></canvas>
+<div id="load">Раскладываю детали…</div>
+
+<aside id="panel">
+  <nav class="vars" aria-label="Варианты гири"><a href="./">⌂ Все</a><a href="soty.html">Соты · минимум пластика</a><a href="obruch.html" aria-current="page">Обруч · быстрая печать</a></nav>
+  <div>
+    <h1>Гиря-обруч <span style="color:var(--accent)">DZEN</span></h1>
+    <p class="sub">Банки открыты почти целиком. Три тонкие плоские детали печатаются лёжа за пару часов и защёлкиваются в жёсткую раму: дуга держит дно, дно держит банки. Спереди рельефом «Ляг в сторону здоровья», сзади — логотип DZEN. Без болтов.</p>
+  </div>
+
+  <div class="two">
+    <div>
+      <p class="lbl">Банок</p>
+      <div class="seg" role="group" aria-label="Число банок">
+        <button id="b7" aria-pressed="true">7</button>
+        <button id="b6" aria-pressed="false">6</button>
+      </div>
+    </div>
+    <div>
+      <p class="lbl">Цвет</p>
+      <div class="sws" id="sws"></div>
+    </div>
+  </div>
+
+  <div class="row">
+    <button class="act" id="aOpen">Разобрать и достать банку</button>
+    <button class="ghost" id="back">Логотип сзади</button>
+    <button class="ghost" id="reset">Сбросить вид</button>
+  </div>
+  <div class="chks">
+    <label class="chk"><input type="checkbox" id="showCans" checked> Показывать банки</label>
+    <label class="chk"><input type="checkbox" id="joint"> <b>Крепление ручки крупно</b></label>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><b id="sPrint">—</b><span>печать всех деталей, сопло 0,8</span></div>
+    <div class="stat"><b id="sPrint6">—</b><span>то же соплом 0,6</span></div>
+    <div class="stat"><b id="sPlastic">—</b><span>пластика, оценка</span></div>
+    <div class="stat"><b id="sTotal">—</b><span>в сборе с банками</span></div>
+  </div>
+
+  <details open>
+    <summary>Как ручка крепится к поддону</summary>
+    <ol>
+      <li>На поддоне два <b>гнезда-кармана</b> 18 × 26 мм, глубина 20 мм, стенки 3 мм. В наружной стенке каждого — <b>окно</b> 14 × 8 мм.</li>
+      <li>Ножка дуги — точно под карман. В её наружной грани прорезан <b>пружинный язычок</b> с зацепом-клином 3 мм (оранжевый на модели).</li>
+      <li>Ножку вставляют сверху. Стенка кармана вжимает клин внутрь, а напротив окна он <b>выщёлкивает</b> в него: плоская верхняя грань клина упирается в край окна — вверх ножку уже не вытащить.</li>
+      <li>Снять дугу: нажать пальцем на клин через окно и поднять. Никакого инструмента.</li>
+    </ol>
+    <p class="note">Держит: два клина 14 × 3 мм на срез, PETG — больше 100 кг, при рывке нужно около 10. От раскачивания страхует сам карман: ножка сидит в нём на 20 мм по всем четырём стенкам. Включи «Крепление ручки крупно», чтобы посмотреть узел вблизи.</p>
+  </details>
+  <details open>
+    <summary>Что держит центральную банку</summary>
+    <p style="margin:8px 0 0">Шесть внешних банок держат язычки обруча. Центральную сверху держит <b>медальон Ø56</b> с логотипом DZEN: он висит под дугой на двух тонких спицах от рогов и лежит ровно над крышкой центральной банки, соседних не касается. Спицы начинаются на рогах ниже хвата, ладонь их не чувствует, а ручка от этого треугольника становится жёстче.</p>
+    <p class="note">Достать банку: две банки спереди и сзади (по бокам от ручки) — отогнуть язычок и поднять. Центральную и четыре под спицами — снять дугу двумя щелчками, поднять банку, поставить, надеть дугу. Так же и заряжается.</p>
+  </details>
+  <details>
+    <summary>Три детали</summary>
+    <table>
+      <tr><td><b>Поддон.</b> Решётчатое дно 3 мм, бортик 24 мм обжимает банки, два гнезда-кармана с окнами под ножки дуги.</td><td id="tTray">—</td></tr>
+      <tr><td><b>Обруч.</b> Кольцо 22 мм по плечам банок с шестью язычками-защёлками над ободками: банки не выпрыгнут. Два уха по бокам.</td><td id="tRing">—</td></tr>
+      <tr><td><b>Дуга.</b> Ручка гири, печатается лёжа. Ножки с пружинными язычками входят в карманы поддона до щелчка, выступы на ножках прижимают уши обруча. Под дугой на двух спицах висит медальон Ø56 с логотипом DZEN, он держит центральную банку.</td><td id="tArch">—</td></tr>
+    </table>
+    <p class="note">Цепочка нагрузки: рука → дуга → клинья язычков в окнах карманов → поддон → банки.</p>
+  </details>
+  <details>
+    <summary>Почему быстро</summary>
+    <ul>
+      <li>Ни одна деталь не выше 26 мм. Высокие тонкие детали печатаются медленно, здесь их нет.</li>
+      <li>Нет висящей дуги, значит нет поддержек и их зачистки.</li>
+      <li>Дуга пустая внутри: две стенки и 8 % заполнения, для ручки этого хватает с запасом.</li>
+      <li>Три детали можно печатать на трёх принтерах одновременно: всё готово за время самой долгой.</li>
+    </ul>
+    <p class="note">Время — по объёму пластика: сопло 0,8 и слой 0,4 около 26 мм³/с, сопло 0,6 и слой 0,3 около 13 мм³/с, плюс 15 % на холостые ходы. Слайсер покажет точнее.</p>
+  </details>
+  <details>
+    <summary>Прочность: удержат ли защёлки</summary>
+    <p style="margin:8px 0 0">Считаем на худший случай: гиря в сборе ≈2,8 кг, при махе нагрузка до 4 g — <b>≈105 Н (≈10,7 кгс)</b> на ручку. PETG: разрыв ≈50 МПа, срез ≈30 МПа, между слоями берём осторожно 20 МПа.</p>
+    <table>
+      <tr><td>Клинья ножек (2 шт. 14 × 3 мм) на срез: 0,6 МПа при допустимых 30</td><td>запас ≈45×</td></tr>
+      <tr><td>Перемычка над окном стакана (3 × 9 мм) на изгиб: 4,5 МПа при 50</td><td>запас ≈11×</td></tr>
+      <tr><td>Отрыв стакана от дна по слоям: 0,3 МПа при 20</td><td>запас ≈60×</td></tr>
+      <tr><td>Поддон как балка между ножками (бортик 26 мм + дно): 3,3 МПа при 50</td><td>запас ≈15×</td></tr>
+      <tr><td>Ручка пустотелая Ø30, изгиб посередине: 4 МПа при 50</td><td>запас ≈12×</td></tr>
+      <tr><td>Язычок обруча над банкой (350 г × 4 g = 14 Н, зацеп 2 × 10 мм): 0,7 МПа</td><td>запас ≈40×</td></tr>
+      <tr><td>Прогиб язычка при защёлкивании банки: 2 мм на длине 19 мм → 2 % при допустимых 4 % для PETG</td><td>запас 2×</td></tr>
+    </table>
+    <p class="note">Итог: всё держит с запасом от 10 раз, узкое место — перемычка над окном стакана, поэтому стенка там 3 мм, а не 2,4. Усилие защёлкивания банки ≈2 кгс на язычок — ощутимый щелчок. PLA не годится: язычки треснут на 2 %. Не посчитано: падение гири на пол с высоты (удар) и усталость защёлок после сотен циклов — только живой тест.</p>
+  </details>
+  <details>
+    <summary>Как заряжать</summary>
+    <ol>
+      <li>Банки в поддон: шесть по кругу, седьмая в центр.</li>
+      <li>Обруч надеть сверху до щелчка шести язычков.</li>
+      <li>Дугу вставить ножками в гнёзда до щелчка. Готово.</li>
+      <li>Достать банку спереди или сзади: отвести язычок обруча и поднять. Центральную и четыре под спицами: нажать клинья в окнах карманов, снять дугу, поднять банку.</li>
+    </ol>
+    <p class="note">Размер банки по стандарту sleek 0,33 (Ø58,6 × 145), банку завода никто не мерил.</p>
+  </details>
+</aside>
+<div id="hint">Вращать — мышью · приблизить — колесом</div>
+<div class="tag" id="tg0"><b>Карман поддона</b> 18 × 26, глубина 20, стенки 3 мм</div>
+<div class="tag" id="tg1"><b>Ножка дуги</b> садится в карман на 20 мм по всем стенкам</div>
+<div class="tag r" id="tg2"><b>Клин язычка</b> выщёлкивает в окно и упирается в его край. Нажать — дуга снимается</div>
+<div class="tag d" id="tg3">Передняя стенка кармана показана прозрачной</div>
+
+<script src="lib/three.min.js"></script>
+<script src="lib/OrbitControls.js"></script>
+<script>
+(async function(){
+if(typeof THREE==='undefined'||!THREE.OrbitControls){ const L=document.getElementById('load'); L.style.textTransform='none'; L.style.letterSpacing='0'; L.style.fontFamily='"IBM Plex Sans",system-ui,sans-serif'; L.style.fontSize='15px';
+  L.innerHTML='<div style="max-width:420px;padding:24px;text-align:center;line-height:1.5"><b style="font-size:18px">Не загрузилась 3D-библиотека</b><br><br>Проверь интернет или VPN и обнови страницу.</div>'; return; }
+const M=THREE.MathUtils, TAU=Math.PI*2;
+// ---------- размеры, мм
+const CAN_R=29.3, CAN_H=145, RC=58.6, CLR=1.2, RR=CAN_R+CLR, T=3, FLOOR=3, RIM_H=24;
+const RING0=126, RING1=148, HOOK_Z=147.6, HOOK_H=3;
+const LEG_X=89, LEG_W=9, ARM_W=13, ARCH_T=26, SOCK_H=24;          // ножка 18 × 26, дуга 26 × 26
+const TOP_Z=231;
+const outerAng=k=>M.degToRad(30+60*k);
+const centers=[]; for(let k=0;k<6;k++) centers.push([RC*Math.cos(outerAng(k)),RC*Math.sin(outerAng(k))]); centers.push([0,0]);
+const Mv=RC*Math.cos(Math.PI/6), Hv=RC*Math.sin(Math.PI/6);
+const smooth=x=>{x=M.clamp(x,0,1);return x*x*(3-2*x);};
+function hugPath(R,seg=26){ const pts=[]; const s=Math.sqrt(R*R-Hv*Hv), pv=Mv+s;
+  for(let k=0;k<6;k++){ const a=outerAng(k),cx=RC*Math.cos(a),cy=RC*Math.sin(a); const px=pv*Math.cos(a+Math.PI/6),py=pv*Math.sin(a+Math.PI/6);
+    let th=Math.atan2(py-cy,px-cx)-a; th=Math.abs(Math.atan2(Math.sin(th),Math.cos(th)));
+    for(let i=(k?1:0);i<=seg;i++){ const t=a-th+2*th*i/seg; pts.push(new THREE.Vector2(cx+R*Math.cos(t),cy+R*Math.sin(t))); } }
+  pts.pop(); return pts; }
+function extrude(shape,z0,z1,bevel=0){ const g=bevel? new THREE.ExtrudeGeometry(shape,{depth:(z1-z0)-2*bevel,bevelEnabled:true,bevelThickness:bevel,bevelSize:bevel,bevelOffset:-bevel,bevelSegments:2,curveSegments:8})
+  : new THREE.ExtrudeGeometry(shape,{depth:z1-z0,bevelEnabled:false,curveSegments:8}); g.translate(0,0,z0+bevel); return g; }
+function bandGeo(z0,z1){ const sh=new THREE.Shape(hugPath(RR+T)); sh.holes.push(new THREE.Path(hugPath(RR))); return extrude(sh,z0,z1,0.7); }
+function floorGeo(){ const sh=new THREE.Shape(hugPath(RR)); centers.forEach(c=>{const p=new THREE.Path(); p.absarc(c[0],c[1],22,0,TAU,false); sh.holes.push(p);}); return extrude(sh,0,FLOOR); }
+// дуга: гладкая осевая линия в плоскости xz, переменная полуширина, выдавлена на 26 мм по y
+function archGeo(){
+  const half=[[LEG_X,4],[LEG_X,60],[LEG_X,150],[LEG_X-4,176],[LEG_X-18,202],[LEG_X-40,220],[LEG_X-66,229],[0,TOP_Z]];
+  const pts=half.map(p=>new THREE.Vector3(p[0],p[1],0)); const mir=half.slice(0,-1).reverse().map(p=>new THREE.Vector3(-p[0],p[1],0));
+  const curve=new THREE.CatmullRomCurve3(pts.concat(mir),false,'centripetal',0.5);
+  const N=160, C=curve.getSpacedPoints(N); const w=z=>LEG_W+(ARM_W-LEG_W)*smooth((z-150)/60);
+  const outer=[],inner=[];
+  for(let i=0;i<=N;i++){ const p=C[i], a=C[Math.max(i-1,0)], b=C[Math.min(i+1,N)]; const tx=b.x-a.x, ty=b.y-a.y, L=Math.hypot(tx,ty); const nx=ty/L, ny=-tx/L; const hw=w(p.y);
+    outer.push(new THREE.Vector2(p.x+nx*hw,p.y+ny*hw)); inner.push(new THREE.Vector2(p.x-nx*hw,p.y-ny*hw)); }
+  // ножки до самого дна ровные: концы обрезаем по z=4
+  const P=outer.concat(inner.reverse()).map(v=>new THREE.Vector2(v.x,Math.max(v.y,4)));
+  const b=6, g=new THREE.ExtrudeGeometry(new THREE.Shape(P),{depth:ARCH_T-2*b,bevelEnabled:true,bevelThickness:b,bevelSize:b,bevelOffset:-b,bevelSegments:4,curveSegments:4});
+  g.rotateX(Math.PI/2); g.translate(0,ARCH_T/2-b,0); return g;
+}
+// штриховой шрифт (5×7)
+const G={ D:[[0,0,0,7],[0,7,3,7],[3,7,5,5],[5,5,5,2],[5,2,3,0],[3,0,0,0]], Z:[[0,7,5,7],[5,7,0,0],[0,0,5,0]], E:[[5,7,0,7],[0,7,0,0],[0,0,5,0],[0,3.5,3.8,3.5]], N:[[0,0,0,7],[0,7,5,0],[5,0,5,7]],
+ S:[[5,6,4,7],[4,7,1,7],[1,7,0,6],[0,6,0,4.5],[0,4.5,1,3.5],[1,3.5,4,3.5],[4,3.5,5,2.5],[5,2.5,5,1],[5,1,4,0],[4,0,1,0],[1,0,0,1]], L:[[0,7,0,0],[0,0,5,0]], K:[[0,0,0,7],[5,7,0,3],[1.6,4.1,5,0]],
+ '0':[[1,0,4,0],[4,0,5,1],[5,1,5,6],[5,6,4,7],[4,7,1,7],[1,7,0,6],[0,6,0,1],[0,1,1,0]], '3':[[0,7,4,7],[4,7,5,6],[5,6,5,4.5],[5,4.5,4,3.5],[4,3.5,1.5,3.5],[4,3.5,5,2.5],[5,2.5,5,1],[5,1,4,0],[4,0,0,0]],
+ '5':[[5,7,0,7],[0,7,0,4],[0,4,4,4],[4,4,5,3],[5,3,5,1],[5,1,4,0],[4,0,0,0]], '6':[[4.5,7,1,7],[1,7,0,5.5],[0,5.5,0,1],[0,1,1,0],[1,0,4,0],[4,0,5,1],[5,1,5,3],[5,3,4,4],[4,4,0,4]], '7':[[0,7,5,7],[5,7,1.5,0]],
+ '8':[[1,0,4,0],[4,0,5,1],[5,1,5,3],[5,3,4,4],[4,4,1,4],[1,4,0,3],[0,3,0,1],[0,1,1,0],[1,4,0,5],[0,5,0,6],[0,6,1,7],[1,7,4,7],[4,7,5,6],[5,6,5,5],[5,5,4,4]], ',':[[2.5,0.6,1.6,-1.2]], '×':[[0.6,1.2,4.4,5.8],[0.6,5.8,4.4,1.2]] };
+G['Ø']=G['0'].concat([[-0.4,-0.6,5.4,7.6]]); const WIDTHS={',':2.2,'×':5,'Ø':5.4};
+G['Л']=[[0,0,1.2,7],[1.2,7,5,7],[5,7,5,0]]; G['Я']=[[5,0,5,7],[5,7,1,7],[1,7,0,6],[0,6,0,4.5],[0,4.5,1,3.5],[1,3.5,5,3.5],[2.4,3.5,0,0]];
+G['Г']=[[0,0,0,7],[0,7,5,7]]; G['В']=[[0,0,0,7],[0,7,3.5,7],[3.5,7,4.5,6],[4.5,6,4.5,4.6],[4.5,4.6,3.5,3.7],[3.5,3.7,0,3.7],[3.5,3.7,5,2.7],[5,2.7,5,1],[5,1,4,0],[4,0,0,0]];
+G['С']=[[5,6,4,7],[4,7,1,7],[1,7,0,6],[0,6,0,1],[0,1,1,0],[1,0,4,0],[4,0,5,1]]; G['Т']=[[0,7,5,7],[2.5,7,2.5,0]]; G['О']=G['0'];
+G['Р']=[[0,0,0,7],[0,7,4,7],[4,7,5,6],[5,6,5,4.5],[5,4.5,4,3.5],[4,3.5,0,3.5]]; G['Н']=[[0,0,0,7],[5,0,5,7],[0,3.5,5,3.5]];
+G['У']=[[0,7,2.6,3.2],[5,7,0.8,0]]; G['З']=[[0,6,1,7],[1,7,4,7],[4,7,5,6],[5,6,5,4.5],[5,4.5,4,3.5],[4,3.5,2,3.5],[4,3.5,5,2.5],[5,2.5,5,1],[5,1,4,0],[4,0,1,0],[1,0,0,1]];
+G['Д']=[[1.2,1,1.6,7],[1.6,7,3.6,7],[3.6,7,4,1],[0,1,5,1],[0,1,0,-0.9],[5,1,5,-0.9]]; G['Ь']=[[0,0,0,7],[0,3.6,3.4,3.6],[3.4,3.6,4.4,2.6],[4.4,2.6,4.4,1],[4.4,1,3.4,0],[3.4,0,0,0]];
+G[' ']=[]; WIDTHS[' ']=2.4; WIDTHS['Ь']=4.6;
+function embossWord(word,k,mat,parent,letterH=10,zc=12){
+  const a=outerAng(k),cx=RC*Math.cos(a),cy=RC*Math.sin(a),R=RR+T,sc=letterH/7,adv=2.2*sc,stroke=1.5,relief=1.0;
+  let total=0; const ws=[...word].map(ch=>{const w=(WIDTHS[ch]||5)*sc; total+=w+adv; return w;}); total-=adv; let u=-total/2;
+  [...word].forEach((ch,i)=>{ (G[ch]||[]).forEach(s=>{ const x0=s[0]*sc,y0=s[1]*sc,x1=s[2]*sc,y1=s[3]*sc; const L=Math.hypot(x1-x0,y1-y0),um=u+(x0+x1)/2,vm=(y0+y1)/2,al=Math.atan2(y1-y0,x1-x0);
+    const phi=a+um/R; const T_=new THREE.Vector3(-Math.sin(phi),Math.cos(phi),0),U=new THREE.Vector3(0,0,1),Rd=new THREE.Vector3(Math.cos(phi),Math.sin(phi),0);
+    const grp=new THREE.Group(); grp.position.set(cx+(R+relief/2-0.2)*Math.cos(phi),cy+(R+relief/2-0.2)*Math.sin(phi),zc-letterH/2+vm); grp.setRotationFromMatrix(new THREE.Matrix4().makeBasis(T_,U,Rd));
+    const box=new THREE.Mesh(new THREE.BoxGeometry(L+stroke,stroke,relief+0.4),mat); box.rotation.z=al; box.castShadow=true; grp.add(box); parent.add(grp); }); u+=ws[i]+adv; });
+}
+
+// ---------- сцена
+const canvas=document.getElementById('c');
+let renderer; try{ renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true}); }catch(err){
+  const L=document.getElementById('load'); L.style.pointerEvents='auto'; L.style.fontFamily='"IBM Plex Sans",system-ui,sans-serif'; L.style.textTransform='none'; L.style.letterSpacing='0'; L.style.fontSize='15px';
+  L.innerHTML='<div style="max-width:420px;padding:24px;text-align:center;line-height:1.5"><b style="font-size:18px">3D не запускается: в браузере выключена графика (WebGL)</b><br><br>Что сделать:<br>1. Chrome → Настройки → Система → включить «Использовать графическое ускорение, если доступно» → «Перезапустить».<br>2. Или просто полностью закрыть Chrome и открыть ссылку снова.<br>3. Или открыть эту ссылку в Safari.</div>'; return; }
+const csize=()=>[canvas.clientWidth||innerWidth, canvas.clientHeight||innerHeight];
+renderer.setPixelRatio(Math.min(devicePixelRatio,2)); { const [w,h]=csize(); renderer.setSize(w,h,false); }
+renderer.outputEncoding=THREE.sRGBEncoding; renderer.toneMapping=THREE.ACESFilmicToneMapping; renderer.toneMappingExposure=1.05;
+renderer.shadowMap.enabled=true; renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+const scene=new THREE.Scene();
+const camera=new THREE.PerspectiveCamera(34,innerWidth/innerHeight,10,4000);
+const HOME={pos:new THREE.Vector3(410,270,490),tgt:new THREE.Vector3(0,115,0)};
+const fitView=()=>{const [w,h]=csize();camera.aspect=w/h;camera.setViewOffset(w,h,innerWidth>720?-165:0,0,w,h);camera.updateProjectionMatrix();};
+camera.position.copy(HOME.pos); fitView();
+const controls=new THREE.OrbitControls(camera,canvas); controls.target.copy(HOME.tgt); controls.enableDamping=true; controls.dampingFactor=.08;
+controls.minDistance=140; controls.maxDistance=1200; controls.maxPolarAngle=Math.PI/2-0.03; controls.enablePan=false;
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches; controls.autoRotate=!reduce; controls.autoRotateSpeed=0.7; controls.addEventListener('start',()=>controls.autoRotate=false);
+{ const env=new THREE.Scene(); env.add(new THREE.Mesh(new THREE.BoxGeometry(3000,3000,3000),new THREE.MeshBasicMaterial({color:0x9a9ea6,side:THREE.BackSide})));
+  const soft=(w,h,x,y,z,c)=>{const m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshBasicMaterial({color:c,side:THREE.DoubleSide}));m.position.set(x,y,z);m.lookAt(0,0,0);env.add(m);};
+  soft(1200,700,0,1200,300,0xffffff); soft(700,900,-1100,500,600,0xe8ebf0); soft(500,900,1100,400,-300,0xd8dbe0); soft(1800,400,0,-200,-1200,0x6a6d72);
+  const pm=new THREE.PMREMGenerator(renderer); scene.environment=pm.fromScene(env,0.04,1,6000).texture; pm.dispose(); }
+scene.add(new THREE.HemisphereLight(0xffffff,0x6b6a66,0.45));
+const key=new THREE.DirectionalLight(0xffffff,1.15); key.position.set(320,560,260); key.castShadow=true;
+key.shadow.mapSize.set(2048,2048); key.shadow.camera.left=key.shadow.camera.bottom=-320; key.shadow.camera.right=key.shadow.camera.top=320; key.shadow.camera.near=100; key.shadow.camera.far=1500; key.shadow.bias=-0.0006; key.shadow.normalBias=0.6; scene.add(key);
+const fill=new THREE.DirectionalLight(0xdfe6f2,0.35); fill.position.set(-400,200,-300); scene.add(fill);
+const floor=new THREE.Mesh(new THREE.CircleGeometry(900,64),new THREE.ShadowMaterial({opacity:0.28})); floor.rotation.x=-Math.PI/2; floor.receiveShadow=true; scene.add(floor);
+const root=new THREE.Group(); root.rotation.x=-Math.PI/2; scene.add(root);
+
+// ---------- детали
+const COLORS=[{n:'Чугун',c:'#1C1E23',r:.62},{n:'Белый',c:'#ECEAE4',r:.45},{n:'Манго',c:'#E8731C',r:.42},{n:'Мята',c:'#3E9C78',r:.42},{n:'Вишня',c:'#9E1F36',r:.42}];
+const mat=new THREE.MeshPhysicalMaterial({color:COLORS[0].c,roughness:.62,metalness:.05,clearcoat:.2,clearcoatRoughness:.55,envMapIntensity:.55});
+const accentMat=new THREE.MeshPhysicalMaterial({color:'#C8531F',roughness:.5,metalness:.05,clearcoat:.2,envMapIntensity:.6});
+const vols={tray:0,ring:0,arch:0};
+const mk=(geo,part,fill,parent,m=mat)=>{const o=new THREE.Mesh(geo,m);o.castShadow=o.receiveShadow=true;parent.add(o);o.userData={part,fill};return o;};
+const tray=new THREE.Group(), ring=new THREE.Group(), arch=new THREE.Group(); root.add(tray,ring,arch);
+// поддон
+mk(bandGeo(0,RIM_H),'tray',1,tray); mk(floorGeo(),'tray',1,tray);
+const LOGO_PATHS=[{"o":[[23.17,8.21],[23.17,-8.72],[27.37,-8.72],[27.37,0.71],[28.0,1.33],[28.68,1.33],[29.87,0.14],[30.04,0.14],[31.75,-1.56],[31.92,-1.56],[33.45,-3.1],[33.62,-3.1],[35.32,-4.8],[35.49,-4.8],[37.2,-6.5],[37.37,-6.5],[39.7,-8.72],[45.94,-8.72],[45.94,8.26],[41.8,8.26],[41.57,8.04],[41.57,-3.04],[40.83,-3.66],[40.6,-3.49],[40.26,-3.49],[38.9,-2.13],[38.73,-2.13],[37.03,-0.43],[36.86,-0.43],[35.15,1.28],[34.98,1.28],[31.4,4.69],[31.23,4.69],[29.7,6.22],[29.53,6.22],[27.83,7.92],[27.66,7.92],[27.32,8.26]],"h":[]},{"o":[[-23.51,8.21],[-23.51,8.04],[-23.68,7.87],[-23.68,7.52],[-23.85,7.35],[-23.85,6.84],[-24.02,6.67],[-24.02,6.33],[-24.19,6.16],[-24.19,5.82],[-24.36,5.65],[-24.36,5.14],[-24.53,4.97],[-24.53,4.63],[-24.7,4.46],[-24.65,4.23],[-24.31,4.23],[-24.14,4.06],[-23.62,4.06],[-23.45,3.89],[-22.94,3.89],[-22.77,3.72],[-22.26,3.72],[-22.09,3.55],[-21.58,3.55],[-21.41,3.38],[-20.73,3.38],[-20.56,3.21],[-19.71,3.21],[-19.54,3.04],[-18.51,3.04],[-18.34,2.87],[-16.64,2.87],[-16.47,2.7],[-14.25,2.7],[-13.8,2.24],[-13.8,1.73],[-14.6,0.94],[-14.77,0.94],[-15.45,0.26],[-15.62,0.26],[-16.3,-0.43],[-16.47,-0.43],[-17.32,-1.28],[-17.49,-1.28],[-18.17,-1.96],[-18.34,-1.96],[-19.02,-2.64],[-19.2,-2.64],[-19.88,-3.32],[-20.05,-3.32],[-20.73,-4.0],[-20.9,-4.0],[-21.75,-4.86],[-21.92,-4.86],[-22.6,-5.54],[-22.77,-5.54],[-23.45,-6.22],[-23.62,-6.22],[-23.85,-6.45],[-23.85,-8.72],[-3.46,-8.72],[-3.52,-6.22],[-14.6,-6.22],[-15.22,-5.76],[-15.22,-5.08],[-14.77,-4.63],[-14.6,-4.63],[-13.91,-3.95],[-13.74,-3.95],[-13.06,-3.27],[-12.89,-3.27],[-12.04,-2.41],[-11.87,-2.41],[-11.19,-1.73],[-11.02,-1.73],[-10.34,-1.05],[-10.17,-1.05],[-9.48,-0.37],[-9.31,-0.37],[-8.46,0.48],[-8.29,0.48],[-7.61,1.16],[-7.44,1.16],[-6.76,1.85],[-6.59,1.85],[-5.91,2.53],[-5.74,2.53],[-5.05,3.21],[-4.88,3.21],[-4.03,4.06],[-3.86,4.06],[-3.63,4.29],[-3.63,4.46],[-3.8,4.63],[-3.8,4.97],[-3.98,5.14],[-3.98,5.65],[-4.15,5.82],[-4.15,6.33],[-4.32,6.5],[-4.32,6.84],[-4.49,7.01],[-4.49,7.52],[-4.66,7.7],[-4.66,8.04],[-4.88,8.26],[-5.4,8.26],[-5.57,8.09],[-6.08,8.09],[-6.25,7.92],[-6.76,7.92],[-6.93,7.75],[-7.61,7.75],[-7.78,7.58],[-8.46,7.58],[-8.63,7.41],[-9.48,7.41],[-9.65,7.24],[-10.68,7.24],[-10.85,7.07],[-12.72,7.07],[-12.89,6.9],[-15.79,6.9],[-15.96,7.07],[-17.83,7.07],[-18.0,7.24],[-19.02,7.24],[-19.2,7.41],[-19.88,7.41],[-20.05,7.58],[-20.73,7.58],[-20.9,7.75],[-21.58,7.75],[-21.75,7.92],[-22.26,7.92],[-22.43,8.09],[-22.77,8.09],[-22.94,8.26]],"h":[]},{"o":[[-46.0,8.09],[-46.0,-8.72],[-28.85,-8.72],[-28.05,-8.04],[-27.88,-8.04],[-26.8,-6.96],[-26.8,-6.79],[-26.46,-6.45],[-26.46,-6.28],[-26.12,-5.93],[-26.12,-5.76],[-25.78,-5.25],[-25.78,-4.91],[-25.44,-4.4],[-25.44,-3.89],[-25.27,-3.72],[-25.27,-3.04],[-25.1,-2.87],[-25.1,0.71],[-25.27,0.88],[-25.27,1.56],[-25.44,1.73],[-25.61,2.58],[-25.78,2.75],[-26.29,3.95],[-26.63,4.29],[-26.63,4.46],[-28.22,6.05],[-28.4,6.05],[-29.25,6.73],[-29.42,6.73],[-30.27,7.24],[-30.61,7.24],[-30.78,7.41],[-31.12,7.41],[-31.29,7.58],[-31.8,7.58],[-31.97,7.75],[-32.48,7.75],[-32.65,7.92],[-33.51,7.92],[-33.68,8.09],[-35.72,8.09],[-35.89,8.26],[-45.77,8.26]],"h":[[[-41.63,3.44],[-41.17,3.89],[-34.36,3.89],[-34.19,3.72],[-33.34,3.72],[-33.17,3.55],[-32.65,3.55],[-32.48,3.38],[-32.14,3.38],[-31.97,3.21],[-31.12,2.87],[-29.99,1.73],[-29.99,1.56],[-29.64,1.05],[-29.64,0.71],[-29.47,0.54],[-29.47,-0.14],[-29.3,-0.31],[-29.3,-2.02],[-29.47,-2.19],[-29.47,-2.87],[-29.64,-3.04],[-29.64,-3.38],[-29.81,-3.55],[-29.81,-3.72],[-30.16,-4.06],[-30.16,-4.23],[-30.78,-4.86],[-30.95,-4.86],[-31.29,-5.2],[-31.46,-5.2],[-31.97,-5.54],[-32.31,-5.54],[-32.48,-5.71],[-32.82,-5.71],[-33.0,-5.88],[-33.68,-5.88],[-33.85,-6.05],[-35.55,-6.05],[-35.72,-6.22],[-40.83,-6.22],[-41.0,-6.05],[-41.17,-6.05],[-41.63,-5.59]]]},{"o":[[-0.85,4.46],[-0.85,4.29],[-1.53,3.1],[-1.53,2.75],[-1.7,2.58],[-1.7,2.24],[-1.87,2.07],[-1.87,1.73],[-2.04,1.56],[-2.04,0.88],[-2.21,0.71],[-2.21,-3.04],[-2.04,-3.21],[-2.04,-3.89],[-1.87,-4.06],[-1.87,-4.57],[-1.7,-4.74],[-1.7,-5.08],[-1.19,-5.93],[-1.19,-6.28],[-0.85,-6.62],[-0.68,-7.13],[0.0,-7.81],[0.0,-7.98],[0.68,-8.72],[19.54,-8.72],[19.71,-8.49],[19.71,-7.47],[19.88,-7.3],[19.88,-6.1],[20.05,-5.93],[19.99,-5.2],[19.65,-5.2],[19.14,-5.54],[18.8,-5.54],[18.63,-5.71],[18.29,-5.71],[18.12,-5.88],[17.78,-5.88],[17.6,-6.05],[17.09,-6.05],[16.92,-6.22],[16.41,-6.22],[16.24,-6.39],[15.73,-6.39],[15.56,-6.56],[14.88,-6.56],[14.71,-6.73],[13.69,-6.73],[13.52,-6.9],[12.32,-6.9],[12.15,-7.07],[8.92,-7.07],[8.75,-6.9],[7.72,-6.9],[7.55,-6.73],[7.04,-6.73],[6.87,-6.56],[6.53,-6.56],[6.36,-6.39],[6.02,-6.39],[5.85,-6.22],[5.34,-6.05],[5.0,-5.71],[4.83,-5.71],[3.69,-4.57],[3.69,-4.4],[3.35,-3.89],[3.35,-3.21],[3.98,-2.75],[20.16,-2.75],[20.39,-2.53],[20.39,-1.33],[20.56,-1.16],[20.56,0.03],[20.39,0.2],[20.39,1.39],[20.22,1.56],[20.22,2.24],[20.05,2.41],[19.88,3.27],[19.71,3.44],[19.2,4.63],[18.68,5.14],[18.68,5.31],[17.6,6.39],[17.43,6.39],[16.41,7.24],[16.24,7.24],[15.39,7.75],[15.05,7.75],[14.54,8.09],[14.2,8.09],[14.03,8.26],[13.52,8.26],[13.35,8.43],[12.66,8.43],[12.49,8.6],[11.47,8.6],[11.36,8.77],[6.99,8.77],[6.87,8.6],[5.85,8.6],[5.68,8.43],[5.0,8.43],[4.83,8.26],[4.49,8.26],[4.32,8.09],[3.46,7.92],[3.29,7.75],[3.12,7.75],[2.95,7.58],[2.61,7.58],[2.27,7.24],[1.76,7.07],[1.42,6.73],[1.25,6.73],[-0.51,4.97],[-0.51,4.8]],"h":[[[3.18,1.45],[3.35,1.56],[3.35,1.9],[3.86,2.58],[3.86,2.75],[4.83,3.72],[5.0,3.72],[5.34,4.06],[5.51,4.06],[6.02,4.4],[6.36,4.4],[6.53,4.57],[7.21,4.57],[7.38,4.74],[10.96,4.74],[11.13,4.57],[11.81,4.57],[11.98,4.4],[12.32,4.4],[12.49,4.23],[13.35,3.89],[13.86,3.38],[14.03,3.38],[14.99,2.07],[14.99,1.73],[15.16,1.56],[15.16,1.05],[14.71,0.6],[3.8,0.6],[3.35,0.88],[3.35,1.22]]]}];   // логотип DZEN (вариант 1), контуры в мм, ширина 92
+function addLogo(k){ const a=outerAng(k),cx=RC*Math.cos(a),cy=RC*Math.sin(a),R=RR+T,zc=RIM_H/2,depth=2.0,sink=0.4;
+  LOGO_PATHS.forEach(sh=>{ const S=new THREE.Shape(sh.o.map(p=>new THREE.Vector2(p[0],p[1]))); sh.h.forEach(h=>S.holes.push(new THREE.Path(h.map(p=>new THREE.Vector2(p[0],p[1])))));
+    const g=new THREE.ExtrudeGeometry(S,{depth:depth+sink,bevelEnabled:false,curveSegments:4}); const P=g.attributes.position;
+    for(let i=0;i<P.count;i++){ const x=P.getX(i),y=P.getY(i),z=P.getZ(i); const phi=a+x/R, r=R-sink+z; P.setXYZ(i,cx+r*Math.cos(phi),cy+r*Math.sin(phi),zc+y); }
+    P.needsUpdate=true; g.computeVertexNormals(); const mm=new THREE.Mesh(g,mat); mm.castShadow=mm.receiveShadow=true; tray.add(mm); }); }
+const frontMat=mat.clone(); frontMat.transparent=true; frontMat.opacity=1; frontMat.depthWrite=true;
+const darkMat=new THREE.MeshStandardMaterial({color:0x101114,roughness:.9,metalness:0});
+[1,-1].forEach(s=>{ const box=(w,d,h,x,y,z,m)=>{const g=new THREE.BoxGeometry(w,d,h); g.translate(x,y,z); return mk(g,'tray',1,tray,m);};
+  box(3,32,SOCK_H, s*(LEG_X-10.5),0,SOCK_H/2);                                   // внутренняя стенка
+  box(3,32,7, s*(LEG_X+10.5),0,3.5); box(3,32,SOCK_H-15, s*(LEG_X+10.5),0,15+(SOCK_H-15)/2);   // наружная стенка с окном 14 × 8
+  box(3,9,8, s*(LEG_X+10.5),11.5,11); box(3,9,8, s*(LEG_X+10.5),-11.5,11);
+  box(24,3,SOCK_H, s*LEG_X,14.5,SOCK_H/2);                                       // задняя боковая
+  box(24,3,SOCK_H, s*LEG_X,-14.5,SOCK_H/2, frontMat);                            // передняя боковая (прозрачная в режиме)
+});
+[[3,'ЛЯГ В'],[4,'СТОРОНУ'],[5,'ЗДОРОВЬЯ']].forEach(([k,w])=>embossWord(w,k,mat,tray)); addLogo(1);
+// обруч с язычками и ушами
+mk(bandGeo(RING0,RING1),'ring',1,ring);
+const fingers=[];
+for(let k=0;k<6;k++){ const a=outerAng(k),c=centers[k]; const fg=new THREE.Group(); fg.position.set(c[0],c[1],RING0+8); fg.rotation.z=a; ring.add(fg); const fb=new THREE.Group(); fg.add(fb);
+  const tongue=new THREE.BoxGeometry(T,10,19); tongue.translate(RR+T/2,0,9.5);
+  const hook=new THREE.BoxGeometry(5,10,HOOK_H); hook.translate(29,0,HOOK_Z-(RING0+8)+HOOK_H/2);
+  const tab=new THREE.BoxGeometry(3.2,10,2.4); tab.translate(RR+T+1.6,0,HOOK_Z-(RING0+8)+HOOK_H+1.2);
+  [tongue,hook,tab].forEach(g=>mk(g,'ring',1,fb)); fingers.push(fb); }
+[1,-1].forEach(s=>{ const g=new THREE.BoxGeometry(18,12,3); g.translate(s*75,0,147.5); mk(g,'ring',1,ring); });
+// дуга + выступы, прижимающие уши
+mk(archGeo(),'arch',0.3,arch);
+{ const disc=new THREE.CylinderGeometry(28,28,3.4,64); disc.rotateX(Math.PI/2); disc.translate(0,0,149.3); mk(disc,'arch',1,arch);        // медальон над центральной банкой
+  const spoke=(P1,P2,r)=>{ const dx=P1[0]-P2[0], dz=P1[1]-P2[1], L=Math.hypot(dx,dz); const g=new THREE.CylinderGeometry(r,r,L+8,16); g.rotateZ(-Math.PI/2); g.rotateY(-Math.atan2(dz,dx)); g.translate((P1[0]+P2[0])/2,0,(P1[1]+P2[1])/2); return g; };
+  [1,-1].forEach(s=>mk(spoke([s*76,188],[s*23,151],3),'arch',1,arch));
+  LOGO_PATHS.forEach(sh=>{ const S=new THREE.Shape(sh.o.map(p=>new THREE.Vector2(p[0]*0.5,p[1]*0.5))); sh.h.forEach(h=>S.holes.push(new THREE.Path(h.map(p=>new THREE.Vector2(p[0]*0.5,p[1]*0.5)))));
+    const g=new THREE.ExtrudeGeometry(S,{depth:1.2,bevelEnabled:false,curveSegments:4}); g.translate(0,0,151); mk(g,'arch',0,arch); }); }
+[1,-1].forEach(s=>{ const g=new THREE.BoxGeometry(5,14,4); g.translate(s*(LEG_X-LEG_W-2.5),0,151); mk(g,'arch',1,arch);
+  const sh=new THREE.Shape([[0,0],[3,3],[3,6],[0,6]].map(p=>new THREE.Vector2(p[0],p[1])));
+  const w=new THREE.ExtrudeGeometry(sh,{depth:14,bevelEnabled:false}); w.rotateX(Math.PI/2); w.translate(0,7,0); if(s<0) w.rotateZ(Math.PI);
+  w.translate(s*(LEG_X+LEG_W),0,8); mk(w,'arch',1,arch,accentMat);                                   // клин язычка
+  [8,-8].forEach(y=>{ const gr=new THREE.BoxGeometry(0.8,1,26); gr.translate(s*(LEG_X+LEG_W+0.2),y,19); mk(gr,'arch',0,arch,darkMat); });
+  const gh=new THREE.BoxGeometry(0.8,16,1); gh.translate(s*(LEG_X+LEG_W+0.2),0,6); mk(gh,'arch',0,arch,darkMat); });
+
+// ---------- банки
+const FLAV=[{n:'манго · маракуйя',c:'#E8791F',d:'#7A3A0C'},{n:'лайм · мята',c:'#7CBB3C',d:'#2E5A16'},{n:'вишня · гранат',c:'#A61F3B',d:'#4A0C1B'}];
+try{ await Promise.race([Promise.all([document.fonts.load('600 220px Oswald'),document.fonts.load('500 60px "IBM Plex Sans"')]), new Promise(r=>setTimeout(r,3000))]); }catch(e){}
+function labelTex(f){ const cv=document.createElement('canvas'); cv.width=1024; cv.height=512; const x=cv.getContext('2d');
+  x.fillStyle=f.c; x.fillRect(0,0,1024,512); x.globalAlpha=.18; x.lineWidth=9; x.strokeStyle=f.d; for(let i=0;i<7;i++){ x.beginPath(); x.arc(512,700,300+i*46,0,TAU); x.stroke(); } x.globalAlpha=1;
+  x.fillStyle='#fff'; x.textAlign='center'; x.textBaseline='middle';
+  [256,768].forEach(cx=>{ x.font='600 230px Oswald, "Arial Narrow", sans-serif'; x.fillText('DZEN',cx,225); x.font='500 44px "IBM Plex Sans", sans-serif'; x.fillText(f.n.toUpperCase(),cx,372); x.font='400 30px "IBM Plex Sans", sans-serif'; x.globalAlpha=.85; x.fillText('ЛИМОНАД · 0,33 л',cx,425); x.globalAlpha=1; });
+  const t=new THREE.CanvasTexture(cv); t.encoding=THREE.sRGBEncoding; t.anisotropy=8; return t; }
+const alu=new THREE.MeshStandardMaterial({color:0xd7d9dc,roughness:.32,metalness:.85,envMapIntensity:1.1});
+const prof=[[0,7],[18,7],[24,1],[26,0],[28.5,.8],[29.3,4],[29.3,127],[28.2,133],[26.6,139],[26.6,142.5],[28.5,143.2],[28.5,145],[27.2,145],[25.5,143.8],[0,143.8]].map(p=>new THREE.Vector2(p[0],p[1]));
+const canGeo=new THREE.LatheGeometry(prof,72), labelGeo=new THREE.CylinderGeometry(29.38,29.38,121,72,1,true); labelGeo.translate(0,65.5,0);
+const labelMats=FLAV.map(f=>new THREE.MeshStandardMaterial({map:labelTex(f),roughness:.38,metalness:.25,envMapIntensity:.8}));
+const cansG=new THREE.Group(); root.add(cansG); const cans=[];
+centers.forEach((c,i)=>{ const g=new THREE.Group(); g.position.set(c[0],c[1],FLOOR); g.rotation.x=Math.PI/2; const b=new THREE.Mesh(canGeo,alu),l=new THREE.Mesh(labelGeo,labelMats[i%3]); b.castShadow=l.castShadow=true; g.add(b,l); cansG.add(g); cans.push(g); });
+
+// ---------- цифры
+function volume(mesh){ const g=mesh.geometry,p=g.attributes.position,ix=g.index; let v=0; const A=new THREE.Vector3(),B=new THREE.Vector3(),C=new THREE.Vector3();
+  const tri=(a,b,c)=>{A.fromBufferAttribute(p,a);B.fromBufferAttribute(p,b);C.fromBufferAttribute(p,c);v+=A.dot(B.cross(C));};
+  if(ix){for(let i=0;i<ix.count;i+=3)tri(ix.getX(i),ix.getX(i+1),ix.getX(i+2));}else{for(let i=0;i<p.count;i+=3)tri(i,i+1,i+2);} return Math.abs(v)/6; }
+root.traverse(o=>{ if(o.isMesh&&o.userData.part) vols[o.userData.part]+=volume(o)*o.userData.fill/1000; });
+const RATE8=26*3.6, RATE6=13*3.6; const hrs=(cm3,rate)=>cm3/rate*1.15;
+const fmt=h=>h<1?`${Math.round(h*60)} мин`:`${h.toFixed(1).replace('.',',')} ч`;
+const totalCm3=vols.tray+vols.ring+vols.arch, grams=Math.round(totalCm3*1.27/5)*5;
+document.getElementById('tTray').textContent=`≈${Math.round(vols.tray*1.27)} г · ${fmt(hrs(vols.tray,RATE8))}`;
+document.getElementById('tRing').textContent=`≈${Math.round(vols.ring*1.27)} г · ${fmt(hrs(vols.ring,RATE8))}`;
+document.getElementById('tArch').textContent=`≈${Math.round(vols.arch*1.27)} г · ${fmt(hrs(vols.arch,RATE8))}`;
+document.getElementById('sPrint').innerHTML=`≈${fmt(hrs(totalCm3,RATE8))} <small>3 детали</small>`;
+document.getElementById('sPrint6').innerHTML=`≈${fmt(hrs(totalCm3,RATE6))}`;
+document.getElementById('sPlastic').innerHTML=`≈${grams} г <small>PETG</small>`;
+let nCans=7; const updTotal=()=>{document.getElementById('sTotal').innerHTML=`${((grams+nCans*350)/1000).toFixed(1).replace('.',',')} кг <small>${nCans} × 350 г</small>`;}; updTotal();
+
+// ---------- управление
+const sws=document.getElementById('sws');
+COLORS.forEach((c,i)=>{ const b=document.createElement('button'); b.className='sw'; b.style.background=c.c; b.title=c.n; b.setAttribute('aria-label',c.n); b.setAttribute('aria-pressed',i===0);
+  b.onclick=()=>{ mat.color.set(c.c); mat.roughness=c.r; frontMat.color.set(c.c); frontMat.roughness=c.r; [...sws.children].forEach(x=>x.setAttribute('aria-pressed',x===b)); }; sws.appendChild(b); });
+const b7=document.getElementById('b7'),b6=document.getElementById('b6');
+b7.onclick=()=>{nCans=7;cans[6].visible=true;b7.setAttribute('aria-pressed',true);b6.setAttribute('aria-pressed',false);updTotal();};
+b6.onclick=()=>{nCans=6;cans[6].visible=false;b6.setAttribute('aria-pressed',true);b7.setAttribute('aria-pressed',false);updTotal();};
+document.getElementById('showCans').onchange=e=>cansG.visible=e.target.checked;
+document.getElementById('back').onclick=()=>{ controls.autoRotate=false; camera.position.set(-30,60,-280); controls.target.set(0,14,-92); if(innerWidth<=720) scrollTo({top:0,behavior:'smooth'}); };
+document.getElementById('reset').onclick=()=>{ jointBox.checked=false; setJoint(false); camera.position.copy(HOME.pos); controls.target.copy(HOME.tgt); controls.autoRotate=!reduce; };
+// крупный план узла крепления
+const jointBox=document.getElementById('joint'); let joint=false, jt=0;
+const TAGS=[[new THREE.Vector3(LEG_X-6,14,SOCK_H),'tg0'],[new THREE.Vector3(LEG_X,-13,78),'tg1'],[new THREE.Vector3(LEG_X+12,0,11),'tg2'],[new THREE.Vector3(LEG_X,-14.5,1),'tg3']].map(([v,id])=>[v,document.getElementById(id)]);
+function setJoint(on){ joint=on; frontMat.opacity=on?0.22:1; TAGS.forEach(([,el])=>el.style.display=on?'block':'none');
+  if(on){ anim=null; arch.position.z=0; ring.position.z=0; controls.autoRotate=false; camera.position.set(300,135,235); controls.target.set(LEG_X+4,30,0); jt=0; }
+  else { arch.position.z=0; } }
+jointBox.onchange=e=>{ setJoint(e.target.checked); if(e.target.checked&&innerWidth<=720) scrollTo({top:0,behavior:'smooth'}); };
+function placeTags(){ const v=new THREE.Vector3(); TAGS.forEach(([p,el])=>{ v.copy(p); root.localToWorld(v); v.project(camera); if(v.z>1){el.style.display='none';return;} const R=canvas.getBoundingClientRect(); el.style.display='block'; el.style.left=(R.left+(v.x+1)/2*R.width)+'px'; el.style.top=(R.top+(1-v.y)/2*R.height)+'px'; }); }
+
+// анимация: дуга вверх из гнёзд, обруч вверх, язычок передней банки (270°) отгибается, банка выходит
+const FRONT=4, front=cans[FRONT]; let anim=null;
+function apply(t){ arch.position.z=140*smooth(t/0.35); ring.position.z=45*smooth((t-0.3)/0.25);
+  fingers[FRONT].rotation.y=M.degToRad(9)*smooth((t-0.5)/0.12)*(1-smooth((t-0.85)/0.1));
+  front.position.set(centers[FRONT][0],centers[FRONT][1],FLOOR+180*smooth((t-0.58)/0.32));
+  cans[6].position.set(0,0,FLOOR+170*smooth((t-0.68)/0.3)); }
+document.getElementById('aOpen').onclick=()=>{ if(anim) return; if(innerWidth<=720) scrollTo({top:0,behavior:'smooth'}); if(joint){ jointBox.checked=false; setJoint(false); camera.position.copy(HOME.pos); controls.target.copy(HOME.tgt); } controls.autoRotate=false; anim={t:0,dir:1,hold:0}; };
+
+document.getElementById('load').remove();
+addEventListener('resize',()=>{const [w,h]=csize(); renderer.setSize(w,h,false); fitView();});
+let last=performance.now();
+renderer.setAnimationLoop(now=>{ const dt=Math.min((now-last)/1000,0.05); last=now;
+  if(joint){ jt+=dt; arch.position.z=24*(0.5-0.5*Math.cos(jt*1.1)); placeTags(); }
+  if(anim){ const dur=4.5; if(anim.dir===1&&anim.t>=1){ anim.hold+=dt; if(anim.hold>1.4) anim.dir=-1; } else anim.t=M.clamp(anim.t+anim.dir*dt/dur,0,1); apply(anim.t); if(anim.dir===-1&&anim.t<=0) anim=null; }
+  controls.update(); renderer.render(scene,camera); });
+})();
+</script>
+
+</body>
+</html>
